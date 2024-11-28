@@ -1,0 +1,38 @@
+name: Build
+
+on: [ push, pull_request ]
+
+jobs:
+  build_wheels:
+    name: Build wheels for ${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.os.runs-on }}
+    strategy:
+      matrix:
+        os:
+          - runs-on: ubuntu-latest
+            platform: manylinux
+          - runs-on: ubuntu-latest
+            platform: musllinux
+        arch: [ x86_64, aarch64 ]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install aarch64 emulation layer
+        if: matrix.os.runs-on == 'ubuntu-latest' && matrix.arch == 'aarch64'
+        run: |
+          sudo apt-get update -q -y
+          sudo apt-get -qq install -y qemu qemu-user-static
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes --credential yes
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
+        env:
+          CIBW_BUILD: "cp311-${{ matrix.os.platform }}_${{ matrix.arch }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheel-${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.arch }}
+          path: ./wheelhouse/*.whl

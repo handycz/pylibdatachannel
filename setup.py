@@ -5,11 +5,12 @@ from setuptools import Extension, setup
 
 setup(
     name="pylibdatachannel",
+    options={'bdist_wheel': {'py_limited_api': 'cp311'}},
     ext_modules=[
         Extension(
             "_pylibdatachannel",
-            sources=[*glob.glob("cpp/*.cpp")],
             py_limited_api=True,
+            sources=[*glob.glob("src/cpp/*.cpp")],
             include_dirs=[
                 "foreign/libdatachannel/include",
                 pybind11.get_include(),

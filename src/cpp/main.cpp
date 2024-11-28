@@ -6,12 +6,12 @@
 
 namespace py = pybind11;
 
-const std::string moduleName = "_libdatachannelwrapper";
+const std::string moduleName = "_pylibdatachannel";
 
 /*
 * Pybind11 module definition
 */
-PYBIND11_MODULE(_libdatachannelwrapper, m) {
+PYBIND11_MODULE(_pylibdatachannel, m) {
   /*
    * PeerConnectionInterface Enums
    */
