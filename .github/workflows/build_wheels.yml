@@ -4,16 +4,30 @@ on: [ push, pull_request ]
 
 jobs:
   build_wheels:
-    name: Build wheels for ${{ matrix.python-version }} on ${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.arch }}
+    name: Build wheels for ${{ matrix.python-version }} on ${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.os.arch }}
     runs-on: ${{ matrix.os.runs-on }}
     strategy:
       matrix:
         os:
-          - runs-on: ubuntu-latest
-            platform: manylinux
-          - runs-on: ubuntu-latest
-            platform: musllinux
-        arch: [ x86_64, aarch64 ]
+#        - runs-on: ubuntu-latest
+#          platform: manylinux
+#          arch: x86_64
+#        - runs-on: ubuntu-latest
+#          platform: manylinux
+#          arch: aarch64
+#        - runs-on: ubuntu-latest
+#          platform: musllinux
+#          arch: x86_64
+#        - runs-on: ubuntu-latest
+#          platform: musllinux
+#          arch: aarch64
+          - runs-on: macos-13
+            platform: macosx
+            arch: x86_64 
+          - runs-on: macos-14
+            platform: macosx
+            arch: arm64
+
         python-version: [ cp311, cp312, cp313 ]
 
     steps:
@@ -22,7 +36,7 @@ jobs:
           submodules: recursive
 
       - name: Install aarch64 emulation layer
-        if: matrix.os.runs-on == 'ubuntu-latest' && matrix.arch == 'aarch64'
+        if: matrix.os.runs-on == 'ubuntu-latest' && matrix.os.arch == 'aarch64'
         run: |
           sudo apt-get update -q -y
           sudo apt-get -qq install -y qemu qemu-user-static
@@ -31,9 +45,9 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22.0
         env:
-          CIBW_BUILD: "${{ matrix.python-version }}-${{ matrix.os.platform }}_${{ matrix.arch }}"
+          CIBW_BUILD: "${{ matrix.python-version }}-${{ matrix.os.platform }}_${{ matrix.os.arch }}"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheel-${{ matrix.python-version}}-${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.arch }}
+          name: cibw-wheel-${{ matrix.python-version }}-${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.os.arch }}
           path: ./wheelhouse/*.whl
