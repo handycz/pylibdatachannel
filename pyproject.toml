@@ -11,6 +11,17 @@ name = "pylibdatachannel"
 version = "0.0.1"
 requires-python = ">=3.11"
 
+[project.optional-dependencies]
+test = [
+    "pybind11",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-mypy",
+    "pytest-ruff",
+    "pytest-timeout",
+    "types-setuptools",
+]
+
 [tool.setuptools.packages.find]
 where = ["src/py"]
 
@@ -20,6 +31,8 @@ where = ["src/py"]
 [tool.cibuildwheel]
 manylinux-x86_64-image = "quay.io/pypa/manylinux_2_28_x86_64:latest"
 manylinux-aarch64-image = "quay.io/pypa/manylinux_2_28_aarch64:latest"
+test-command = "pytest {package}"
+test-extras = "test"
 
 [tool.cibuildwheel.linux]
 before-all = "scripts/prepare-linux.sh"
@@ -28,3 +41,40 @@ archs = [
     "aarch64",
 ]
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+timeout = 120
+norecursedirs = [
+    "build",
+    "foreign",
+]
+
+required_plugins = [
+    "pytest-asyncio",
+    "pytest-mypy",
+    "pytest-ruff",
+    "pytest-timeout",
+]
+
+addopts = "--mypy --ruff --ruff-format"
+
+[tool.ruff]
+line-length = 350
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # async
+    "ASYNC",
+]
