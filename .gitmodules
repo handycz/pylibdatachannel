@@ -1,0 +1,4 @@
+[submodule "foreign/libdatachannel"]
+	path = foreign/libdatachannel
+	url = git@github.com:paullouisageneau/libdatachannel.git
+	shallow = true
