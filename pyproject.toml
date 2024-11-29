@@ -44,6 +44,9 @@ where = ["src/py"]
 [tool.setuptools.package-data]
 "*" = ["py.typed", "*.pyi"]
 
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
+
 [tool.cibuildwheel]
 manylinux-x86_64-image = "quay.io/pypa/manylinux_2_28_x86_64:latest"
 manylinux-aarch64-image = "quay.io/pypa/manylinux_2_28_aarch64:latest"
