@@ -11,7 +11,7 @@ cmake \
   -DNO_WEBSOCKET=1 \
   -DNO_EXAMPLES=1 \
   -DNO_TESTS=1 \
-  -DCMAKE_INSTALL_LIBDIR=/lib64 \
+  -DCMAKE_INSTALL_LIBDIR=/lib \
   foreign/libdatachannel
 
 cmake --build build --target install
