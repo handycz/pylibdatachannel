@@ -1,2 +1,1 @@
-from _pylibdatachannel import *
-
+from _pylibdatachannel import *  # noqa: F403
