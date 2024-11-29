@@ -37,3 +37,26 @@ jobs:
         with:
           name: cibw-wheel-${{ matrix.python-version}}-${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.arch }}
           path: ./wheelhouse/*.whl
+
+  publish-to-testpypi:
+    name: Publish to Test Pypi
+    needs:
+    - build_wheels
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/pylibdatachannel
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        pattern: cibw-wheel-*
+        path: dist/
+        merge-multiple: true
+    - name: Publish distribution package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
