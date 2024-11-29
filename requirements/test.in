@@ -1,0 +1,8 @@
+pybind11
+pytest
+pytest-asyncio
+pytest-mypy
+pytest-ruff
+pytest-timeout
+types-setuptools
+
