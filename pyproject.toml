@@ -10,6 +10,29 @@ build-backend = "setuptools.build_meta"
 name = "pylibdatachannel"
 requires-python = ">=3.11"
 dynamic = ["version", "dependencies", "optional-dependencies"]
+description = "Wrapper around libdatachannel"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Ondřej Novák", email = "git@npost.cz"},
+]
+keywords = [
+    "libdatachannel",
+    "webrtc",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+]
+
+[project.urls]
+Homepage = "https://github.com/handycz/pylibdatachannel"
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements/base.txt"] }
