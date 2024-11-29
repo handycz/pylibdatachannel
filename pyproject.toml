@@ -1,15 +1,15 @@
 [build-system]
 requires = [
     "setuptools>=75.0.0",
+    "setuptools_scm>=8",
     "pybind11>=2.10.0",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pylibdatachannel"
-version = "0.0.1"
 requires-python = ">=3.11"
-dynamic = ["dependencies", "optional-dependencies"]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements/base.txt"] }
