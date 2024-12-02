@@ -13,5 +13,5 @@ The library uses Semver that does not match the version of *libdatachannel*. The
 
 | Wrapper version   | Library version   |
 | ----------------- | ----------------- |
-| 0.0.1             | 0.22.2            |
+| 0.1.0             | 0.22.2            |
 
