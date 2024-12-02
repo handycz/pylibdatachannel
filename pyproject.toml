@@ -1,32 +1,51 @@
 [build-system]
 requires = [
-    "setuptools",
-    "wheel",
+    "setuptools>=75.0.0",
+    "setuptools_scm>=8",
     "pybind11>=2.10.0",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pylibdatachannel"
-version = "0.0.1"
 requires-python = ">=3.11"
-
-[project.optional-dependencies]
-test = [
-    "pybind11",
-    "pytest",
-    "pytest-asyncio",
-    "pytest-mypy",
-    "pytest-ruff",
-    "pytest-timeout",
-    "types-setuptools",
+dynamic = ["version", "dependencies", "optional-dependencies"]
+description = "Wrapper around libdatachannel"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Ondřej Novák", email = "git@npost.cz"},
 ]
+keywords = [
+    "libdatachannel",
+    "webrtc",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+]
+
+[project.urls]
+Homepage = "https://github.com/handycz/pylibdatachannel"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements/base.txt"] }
+optional-dependencies.test = { file = ["requirements/test.txt"] }
 
 [tool.setuptools.packages.find]
 where = ["src/py"]
 
 [tool.setuptools.package-data]
 "*" = ["py.typed", "*.pyi"]
+
+[tool.setuptools_scm]
+local_scheme = "no-local-version"
 
 [tool.cibuildwheel]
 manylinux-x86_64-image = "quay.io/pypa/manylinux_2_28_x86_64:latest"
