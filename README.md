@@ -5,6 +5,13 @@ The library currently only supports minimal API needed by my use case, but contr
 
 **Disclaimer**: This project is an independent Python wrapper for the `libdatachannel` library and is not affiliated with, endorsed by, or maintained by the original `libdatachannel` project.
 
+## Building
+The wheels are automatically build by the CI. The simplest way to get a local build would be using a `cibuildwheel` (which requires Docker or Podman). This does not support crosscompilation though.
+1. Install the package: `$ pip install cibuildwheel`
+2. Build: `$ cibuildwheel`
+2b. or build with the use of `podman`: `$ CIBW_CONTAINER_ENGINE="podman" cibuildwheel`
+3. Get the wheels in the `wheelhouse` directory
+
 ## Wheels
 Python wheels are published to [Pypi repository](https://pypi.org/project/pylibdatachannel). Only Linux `x86_64` and `aarch64` are currently built.
 
