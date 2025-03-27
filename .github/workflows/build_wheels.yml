@@ -9,9 +9,9 @@ jobs:
     strategy:
       matrix:
         os:
-          - runs-on: ubuntu-latest
+          - runs-on: ubuntu-24.04
             platform: manylinux
-          - runs-on: ubuntu-latest
+          - runs-on: ubuntu-24.04
             platform: musllinux
         arch: [ x86_64, aarch64 ]
         python-version: [ cp311, cp312, cp313 ]
@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install aarch64 emulation layer
-        if: matrix.os.runs-on == 'ubuntu-latest' && matrix.arch == 'aarch64'
+        if: matrix.os.runs-on == 'ubuntu-24.04' && matrix.arch == 'aarch64'
         run: |
           sudo apt-get update -q -y
           sudo apt-get -qq install -y qemu qemu-user-static
