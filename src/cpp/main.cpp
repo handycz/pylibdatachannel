@@ -177,7 +177,7 @@ PYBIND11_MODULE(_pylibdatachannel, m) {
 	"Send a message to the remote peer. The message can be either a `str` or `bytes`."
 	)
 	.def("reset_callbacks", &rtc::DataChannel::resetCallbacks)
-	.def("close", &rtc::DataChannel::close);
+	.def("close", &rtc::DataChannel::close, py::call_guard<py::gil_scoped_release>{});
 
  /*
   * PeerConnectionInterface

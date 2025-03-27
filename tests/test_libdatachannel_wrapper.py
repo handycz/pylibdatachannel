@@ -155,3 +155,48 @@ def test_peer_connection_send_message():
     assert message_queue.get(timeout=2) == b"hello"
     for i in range(3):
         assert message_queue.get(timeout=2) == f"1->2: {i}"
+
+
+@pytest.mark.parametrize(
+    "run_number",
+    range(30),  # run the test multiple times to detect race conditions
+)
+def test_close_channel(run_number: int):
+    pc1, pc2 = _create_peer_connections()
+
+    pc1_dc_open_evt = threading.Event()
+    pc1_dc_closed_evt = threading.Event()
+    message_queue = queue.Queue[str | bytes]()
+
+    def _on_channel(channel: DataChannel):
+        def _on_open():
+            channel.send("hello")
+            channel.send(b"not gonna read this")
+
+        channel.on_open(_on_open)
+
+    def _on_message(msg: str | list[int]):
+        if isinstance(msg, list):
+            message_queue.put(bytes(msg))
+        else:
+            message_queue.put(msg)
+
+    pc2.on_data_channel(_on_channel)
+
+    pc1_dc = pc1.create_data_channel("test")
+    pc1_dc.on_open(pc1_dc_open_evt.set)
+    pc1_dc.on_message(_on_message)
+    pc1_dc.on_closed(pc1_dc_closed_evt.set)
+
+    pc1_dc_open_evt.wait(timeout=2)
+
+    assert pc1_dc.is_open
+    assert pc1.state == State.CONNECTED
+    assert pc2.state == State.CONNECTED
+
+    msg = message_queue.get(timeout=2)
+
+    del msg
+    pc1_dc.close()
+
+    pc1_dc_closed_evt.wait(timeout=2)
