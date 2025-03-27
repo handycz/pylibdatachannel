@@ -4,16 +4,12 @@ on: [ push, pull_request ]
 
 jobs:
   build_wheels:
-    name: Build wheels for ${{ matrix.python-version }} on ${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.arch }}
-    runs-on: ${{ matrix.os.runs-on }}
+    name: Build wheels for ${{ matrix.python-version }} (${{ matrix.platform }}) on ${{ matrix.arch }}
+    runs-on: ${{ matrix.arch == 'x86_64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }} 
     strategy:
       matrix:
-        os:
-          - runs-on: ubuntu-24.04
-            platform: manylinux
-          - runs-on: ubuntu-24.04
-            platform: musllinux
-        arch: [ x86_64, aarch64 ]
+        platform: [ manylinux, musllinux ]
+        arch: ["x86_64", "aarch64"]
         python-version: [ cp311, cp312, cp313 ]
 
     steps:
@@ -22,21 +18,14 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Install aarch64 emulation layer
-        if: matrix.os.runs-on == 'ubuntu-24.04' && matrix.arch == 'aarch64'
-        run: |
-          sudo apt-get update -q -y
-          sudo apt-get -qq install -y qemu qemu-user-static
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes --credential yes
-
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22.0
         env:
-          CIBW_BUILD: "${{ matrix.python-version }}-${{ matrix.os.platform }}_${{ matrix.arch }}"
+          CIBW_BUILD: "${{ matrix.python-version }}-${{ matrix.platform }}_${{ matrix.arch }}"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: cibw-wheel-${{ matrix.python-version}}-${{ matrix.os.platform || matrix.os.runs-on }}-${{ matrix.arch }}
+          name: cibw-wheel-${{ matrix.python-version}}-${{ matrix.platform || matrix.runs-on }}-${{ matrix.arch }}
           path: ./wheelhouse/*.whl
 
   publish-to-testpypi:
