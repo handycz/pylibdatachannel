@@ -137,22 +137,27 @@ PYBIND11_MODULE(_pylibdatachannel, m) {
 		.def("on_open", &rtc::DataChannel::onOpen, py::arg("callback"), py::keep_alive<1, 2>())
 		.def("on_closed", &rtc::DataChannel::onClosed, py::arg("callback"), py::keep_alive<1, 2>())
 		.def("on_error", &rtc::DataChannel::onError, py::arg("callback"), py::keep_alive<1, 2>())
-		.def("on_message", [](rtc::DataChannel &self, std::function<void(std::variant<std::string, std::vector<uint8_t>> data)> callback) {
+		.def("on_message", [](rtc::DataChannel &self, std::function<void(std::variant<std::string, py::bytes> data)> callback) {
 			self.onMessage(
 				[callback](rtc::binary data) {
-					std::vector<uint8_t> bytes;
-					bytes.reserve(data.size());
-					for (std::byte b : data) {
-						bytes.push_back(static_cast<uint8_t>(b));
-					}
+					std::string str;
+					std::transform(data.begin(), data.end(), std::back_inserter(str),
+		        [](std::byte b) { return static_cast<char>(b); }
+			    );
 
-					callback(
-						std::variant<std::string, std::vector<uint8_t>>(bytes)
-					);
+					py::gil_scoped_acquire acquire;					
+					py::bytes bytes = py::bytes(str);
+
+					{
+						py::gil_scoped_release release;
+						callback(
+							std::variant<std::string, py::bytes>(bytes)
+						);
+					}
 				},
 				[callback](std::string data) {
 					callback(
-						std::variant<std::string, std::vector<uint8_t>>(data)
+						std::variant<std::string, py::bytes>(data)
 					);
 				}
 			);

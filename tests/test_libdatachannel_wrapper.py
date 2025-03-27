@@ -128,18 +128,16 @@ def test_peer_connection_send_message():
 
     def _on_channel(channel: DataChannel):
         def _on_open():
-            channel.send(b"hello")
+            channel.send("hello as string")
+            channel.send(b"hello as binary")
 
             for i in range(3):
                 channel.send(f"1->2: {i}")
 
         channel.on_open(_on_open)
 
-    def _on_message(msg: str | list[int]):
-        if isinstance(msg, list):
-            message_queue.put(bytes(msg))
-        else:
-            message_queue.put(msg)
+    def _on_message(msg: str | bytes):
+        message_queue.put(msg)
 
     pc2.on_data_channel(_on_channel)
 
@@ -152,7 +150,9 @@ def test_peer_connection_send_message():
     assert pc1.state == State.CONNECTED
     assert pc2.state == State.CONNECTED
 
-    assert message_queue.get(timeout=2) == b"hello"
+    assert message_queue.get(timeout=2) == "hello as string"
+    assert message_queue.get(timeout=2) == b"hello as binary"
+
     for i in range(3):
         assert message_queue.get(timeout=2) == f"1->2: {i}"
 
@@ -175,11 +175,8 @@ def test_close_channel(run_number: int):
 
         channel.on_open(_on_open)
 
-    def _on_message(msg: str | list[int]):
-        if isinstance(msg, list):
-            message_queue.put(bytes(msg))
-        else:
-            message_queue.put(msg)
+    def _on_message(msg: str | bytes):
+        message_queue.put(msg)
 
     pc2.on_data_channel(_on_channel)
 
